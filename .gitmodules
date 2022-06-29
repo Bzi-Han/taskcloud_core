@@ -1,0 +1,30 @@
+[submodule "third_party/cryptopp"]
+	path = third_party/cryptopp
+	url = https://github.com/weidai11/cryptopp.git
+[submodule "third_party/rapidjson"]
+	path = third_party/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
+[submodule "third_party/curl"]
+	path = third_party/curl
+	url = https://github.com/curl/curl.git
+[submodule "third_party/luajit"]
+	path = third_party/luajit
+	url = https://github.com/Bzi-Han/LuaJIT.git
+[submodule "third_party/luajit-cmake"]
+	path = third_party/luajit-cmake
+	url = https://github.com/zhaozg/luajit-cmake.git
+[submodule "third_party/cryptopp-cmake"]
+	path = third_party/cryptopp-cmake
+	url = https://github.com/noloader/cryptopp-cmake.git
+[submodule "third_party/luabridge"]
+	path = third_party/luabridge
+	url = https://github.com/Bzi-Han/LuaBridge.git
+[submodule "third_party/yasio"]
+	path = third_party/yasio
+	url = https://github.com/yasio/yasio.git
+[submodule "third_party/pybind11"]
+	path = third_party/pybind11
+	url = https://github.com/pybind/pybind11.git
+[submodule "third_party/quickjs-cmake"]
+	path = third_party/quickjs-cmake
+	url = https://github.com/Bzi-Han/quickjs-cmake.git
