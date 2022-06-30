@@ -74,7 +74,7 @@ namespace ModuleJson
             bool endNode();
 
             template <typename any_t>
-            constexpr bool value(any_t value);
+            bool value(any_t value);
 
         private:
             ReaderType m_readerType;

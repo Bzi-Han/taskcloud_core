@@ -37,6 +37,7 @@ set(CMAKE_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION_BACK})
 
 # build curl static library
 set(BUILD_SHARED_LIBS OFF)
+set(BUILD_CURL_EXE OFF)
 add_subdirectory(third_party/curl)
 
 # scan common source files

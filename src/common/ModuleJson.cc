@@ -186,7 +186,7 @@ namespace ModuleJson::Detail
     }
 
     template <typename any_t>
-    constexpr bool JsonReader::value(any_t value)
+    bool JsonReader::value(any_t value)
     {
         switch (m_readerType)
         {

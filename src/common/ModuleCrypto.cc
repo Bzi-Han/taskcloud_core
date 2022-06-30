@@ -3,7 +3,7 @@
 namespace ModuleCrypto::Detail
 {
     template <typename algorithm_t>
-    constexpr std::string messageDigest(const std::string &data)
+    std::string messageDigest(const std::string &data)
     {
         std::string result;
         algorithm_t algorithm;
@@ -20,7 +20,7 @@ namespace ModuleCrypto::Detail
     }
 
     template <typename algorithm_t>
-    constexpr std::string symmetric(const std::string &data, const std::string &key, const std::string &iv, const std::string &padding)
+    std::string symmetric(const std::string &data, const std::string &key, const std::string &iv, const std::string &padding)
     {
         std::string result;
         algorithm_t algorithm;

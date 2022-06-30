@@ -95,6 +95,8 @@
         "cerrno": "cpp",
         "cfloat": "cpp",
         "climits": "cpp",
-        "version": "cpp"
+        "version": "cpp",
+        "signal.h": "c",
+        "msvc-defs.h": "c"
     }
 }

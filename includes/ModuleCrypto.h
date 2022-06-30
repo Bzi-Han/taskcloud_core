@@ -22,10 +22,10 @@ namespace ModuleCrypto
     namespace Detail
     {
         template <typename algorithm_t>
-        constexpr std::string messageDigest(const std::string &data);
+        std::string messageDigest(const std::string &data);
 
         template <typename algorithm_t>
-        constexpr std::string symmetric(const std::string &data, const std::string &key, const std::string &iv, const std::string &padding);
+        std::string symmetric(const std::string &data, const std::string &key, const std::string &iv, const std::string &padding);
     }
 
     void bind(lua_State *luaState);

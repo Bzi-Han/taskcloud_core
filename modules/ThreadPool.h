@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <memory>
+#include <vector>
 #include <functional>
 #include <mutex>
 #include <condition_variable>
@@ -61,7 +62,7 @@ public:
      * @return 获取执行体返回值的std::future<result_t>对象
      */
     template <typename runable_t, typename... param_t>
-    constexpr auto addRunable(const runable_t &runable, param_t &&...params)
+    auto addRunable(const runable_t &runable, param_t &&...params)
     {
 #ifndef _MSC_VER //!_MSC_VER
 #if __cplusplus >= 201703L
@@ -100,7 +101,7 @@ public:
      * @return void
      */
     template <typename runable_t>
-    constexpr void addRunableNoWrap(const runable_t &runable)
+    void addRunableNoWrap(const runable_t &runable)
     {
         {
             std::unique_lock<std::mutex> locker(m_takeMutex);

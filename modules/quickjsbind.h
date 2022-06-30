@@ -12,66 +12,6 @@ namespace quickjs
         {
         };
 
-        template <>
-        struct Value<JSValue>
-        {
-            JSContext *context;
-            JSValue value;
-
-            template <typename any_t>
-            any_t cast() const
-            {
-                return js_type_traits<any_t>::cast(context, 0, nullptr, value);
-            }
-
-            bool isNull() const
-            {
-                return JS_IsNull(value);
-            }
-
-            bool isBoolean() const
-            {
-                return JS_IsBool(value);
-            }
-
-            bool isNumber() const
-            {
-                return JS_IsNumber(value);
-            }
-
-            bool isString() const
-            {
-                return JS_IsString(value);
-            }
-
-            bool isObject() const
-            {
-                return JS_IsObject(value);
-            }
-
-            bool isArray() const
-            {
-                return JS_IsArray(context, value);
-            }
-
-            bool isFunction() const
-            {
-                return JS_IsFunction(context, value);
-            }
-
-            bool isUndefined() const
-            {
-                return JS_IsUndefined(value);
-            }
-        };
-
-        template <typename any_t>
-        struct Value<any_t>
-        {
-            JSContext *context;
-            any_t value;
-        };
-
         template <typename... any_t>
         struct js_type_traits
         {
@@ -129,26 +69,26 @@ namespace quickjs
         };
 
         template <>
-        struct js_type_traits<__int64>
+        struct js_type_traits<int64_t>
         {
-            static JSValue cast(JSContext *context, int argc, JSValue *args, __int64 value) noexcept { return JS_NewInt64(context, value); }
-            static __int64 cast(JSContext *context, int argc, JSValue *args, JSValue value) noexcept
+            static JSValue cast(JSContext *context, int argc, JSValue *args, int64_t value) noexcept { return JS_NewInt64(context, value); }
+            static int64_t cast(JSContext *context, int argc, JSValue *args, JSValue value) noexcept
             {
-                __int64 result = 0;
+                int64_t result = 0;
                 JS_ToInt64(context, &result, value);
                 return result;
             }
         };
 
         template <>
-        struct js_type_traits<unsigned __int64>
+        struct js_type_traits<uint64_t>
         {
-            static JSValue cast(JSContext *context, int argc, JSValue *args, unsigned __int64 value) noexcept { return JS_NewInt64(context, value); }
-            static unsigned __int64 cast(JSContext *context, int argc, JSValue *args, JSValue value) noexcept
+            static JSValue cast(JSContext *context, int argc, JSValue *args, uint64_t value) noexcept { return JS_NewInt64(context, value); }
+            static uint64_t cast(JSContext *context, int argc, JSValue *args, JSValue value) noexcept
             {
-                __int64 result = 0;
+                int64_t result = 0;
                 JS_ToInt64(context, &result, value);
-                return static_cast<unsigned __int64>(result);
+                return static_cast<uint64_t>(result);
             }
         };
 
@@ -183,6 +123,76 @@ namespace quickjs
             static Value<any_t> cast(JSContext *context, int argc, JSValue *args, JSValue value) noexcept { return {context, js_type_traits<any_t>::cast(context, argc, args, value)}; }
         };
 
+        template <typename any_t>
+        struct Value<any_t>
+        {
+            JSContext *context;
+            any_t value;
+        };
+
+        template <>
+        struct Value<JSValue>
+        {
+            JSContext *context;
+            JSValue value;
+
+            template <typename any_t>
+            any_t cast() const
+            {
+                return js_type_traits<any_t>::cast(context, 0, nullptr, value);
+            }
+
+            bool isNull() const
+            {
+                return JS_IsNull(value);
+            }
+
+            bool isBoolean() const
+            {
+                return JS_IsBool(value);
+            }
+
+            bool isNumber() const
+            {
+                return JS_IsNumber(value);
+            }
+
+            bool isString() const
+            {
+                return JS_IsString(value);
+            }
+
+            bool isObject() const
+            {
+                return JS_IsObject(value);
+            }
+
+            bool isArray() const
+            {
+                return JS_IsArray(context, value);
+            }
+
+            bool isFunction() const
+            {
+                return JS_IsFunction(context, value);
+            }
+
+            bool isUndefined() const
+            {
+                return JS_IsUndefined(value);
+            }
+        };
+
+        template <auto function_pointer>
+        struct function_info_packer
+        {
+        };
+
+        template <typename... any_t>
+        struct js_function_castper
+        {
+        };
+
         template <typename tuple_t, size_t... i>
         constexpr auto js_args_tuple_impl(JSContext *context, int argc, JSValue *args, std::index_sequence<i...>) noexcept
         {
@@ -194,16 +204,6 @@ namespace quickjs
         {
             return js_args_tuple_impl<std::tuple<std::decay_t<params_t>...>>(context, argc, args, std::make_index_sequence<sizeof...(params_t)>{});
         }
-
-        template <auto function_pointer>
-        struct function_info_packer
-        {
-        };
-
-        template <typename... any_t>
-        struct js_function_castper
-        {
-        };
 
         template <typename return_t, typename... params_t, return_t (*runable)(params_t...)>
         struct js_function_castper<function_info_packer<runable>>
