@@ -3,6 +3,8 @@
 
 #include <quickjs-cmake/quickjs/quickjs.h>
 
+#include <string>
+
 namespace quickjs
 {
     namespace Detail
@@ -214,11 +216,13 @@ namespace quickjs
                     context,
                     +[](JSContext *context, JSValueConst this_val, int argc, JSValueConst *argv)
                     {
-                        return js_type_traits<return_t>::cast(
-                            context,
-                            argc,
-                            argv,
-                            std::apply(runable, js_args_tuple<params_t...>(context, argc, argv)));
+                        if constexpr (std::is_same_v<void, return_t>)
+                        {
+                            std::apply(runable, js_args_tuple<params_t...>(context, argc, argv));
+                            return JS_UNDEFINED;
+                        }
+                        else
+                            return js_type_traits<return_t>::cast(context, argc, argv, std::apply(runable, js_args_tuple<params_t...>(context, argc, argv)));
                     },
                     nullptr,
                     0);
