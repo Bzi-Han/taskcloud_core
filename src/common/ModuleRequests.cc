@@ -81,7 +81,7 @@ namespace ModuleRequests::Detail
                     else
                     {
                         if (userData->contains("Set-Cookie"))
-                            userData->at("Set-Cookie") += "; " + std::string{value.data(), value.size()};
+                            userData->at("Set-Cookie") += "; " + std::string(value.data(), value.size());
                         else
                             userData->emplace("Set-Cookie", std::string{value.data(), value.size()});
                     }

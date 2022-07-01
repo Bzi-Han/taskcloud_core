@@ -75,7 +75,7 @@ namespace ModuleTools::Logger
         for (const auto &item : items)
             ss << item << " ";
 
-        logger(Detail::LogType::operation, ss.view(), userData);
+        logger(Detail::LogType::operation, ss.str(), userData);
     }
 
     void info(const std::vector<std::string> &items, void *userData)
@@ -85,7 +85,7 @@ namespace ModuleTools::Logger
         for (const auto &item : items)
             ss << item << " ";
 
-        logger(Detail::LogType::info, ss.view(), userData);
+        logger(Detail::LogType::info, ss.str(), userData);
     }
 
     void failed(const std::vector<std::string> &items, void *userData)
@@ -95,7 +95,7 @@ namespace ModuleTools::Logger
         for (const auto &item : items)
             ss << item << " ";
 
-        logger(Detail::LogType::failed, ss.view(), userData);
+        logger(Detail::LogType::failed, ss.str(), userData);
     }
 
     void succeed(const std::vector<std::string> &items, void *userData)
@@ -105,7 +105,7 @@ namespace ModuleTools::Logger
         for (const auto &item : items)
             ss << item << " ";
 
-        logger(Detail::LogType::succeed, ss.view(), userData);
+        logger(Detail::LogType::succeed, ss.str(), userData);
     }
 }
 

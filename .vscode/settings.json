@@ -97,6 +97,7 @@
         "climits": "cpp",
         "version": "cpp",
         "signal.h": "c",
-        "msvc-defs.h": "c"
+        "msvc-defs.h": "c",
+        "lj_libdef.h": "c"
     }
 }
