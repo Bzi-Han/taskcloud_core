@@ -31,7 +31,7 @@ namespace quickjs
         };
 
         template <>
-        struct js_type_traits<nullptr_t>
+        struct js_type_traits<std::nullptr_t>
         {
             static JSValue cast(JSContext *context, int argc, JSValue *args, void *) noexcept { return JS_NULL; }
             static void *cast(JSContext *context, int argc, JSValue *args, JSValue value) noexcept { return nullptr; }
