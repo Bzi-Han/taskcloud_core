@@ -44,12 +44,18 @@ namespace ModuleRequests
     {
         luabridge::LuaRef luaGet(lua_State *luaState);
         luabridge::LuaRef luaPost(lua_State *luaState);
+        luabridge::LuaRef luaPut(lua_State *luaState);
+        luabridge::LuaRef luaDelete(lua_State *luaState);
 
         pybind11::dict pyGet(pybind11::args args);
         pybind11::dict pyPost(pybind11::args args);
+        pybind11::dict pyPut(pybind11::args args);
+        pybind11::dict pyDelete(pybind11::args args);
 
         JSValue jsGet(quickjs::args args);
         JSValue jsPost(quickjs::args args);
+        JSValue jsPut(quickjs::args args);
+        JSValue jsDelete(quickjs::args args);
     }
 
     void bind(lua_State *luaState);
@@ -61,6 +67,10 @@ namespace ModuleRequests
     Detail::RequestResult get(const std::string &url, const Detail::headers_t &headers = {}, const std::string &proxy = "", bool redirect = true, size_t timeout = 100000);
 
     Detail::RequestResult post(const std::string &url, const std::string &data, bool isJson = false, const Detail::headers_t &headers = {}, const std::string &proxy = "", bool redirect = true, size_t timeout = 100000);
+
+    Detail::RequestResult put(const std::string &url, const std::string &data, bool isJson = false, const Detail::headers_t &headers = {}, const std::string &proxy = "", bool redirect = true, size_t timeout = 100000);
+
+    Detail::RequestResult delete_(const std::string &url, const Detail::headers_t &headers = {}, const std::string &proxy = "", bool redirect = true, size_t timeout = 100000);
 }
 
 #endif // !MODULE_REQUESTS_H

@@ -324,10 +324,10 @@ namespace ModuleRequests::Bindings
 
         auto response = get(
             lua_tostring(luaState, 1),
-            2 < paramsCount ? Detail::luaTableToMap(luaState, 2) : std::unordered_map<std::string, std::string>{},
-            3 < paramsCount ? lua_tostring(luaState, 3) : "",
-            4 < paramsCount ? lua_toboolean(luaState, 4) : true,
-            5 < paramsCount ? lua_tointeger(luaState, 5) : 100000);
+            2 <= paramsCount ? Detail::luaTableToMap(luaState, 2) : std::unordered_map<std::string, std::string>{},
+            3 <= paramsCount ? lua_tostring(luaState, 3) : "",
+            4 <= paramsCount ? lua_toboolean(luaState, 4) : true,
+            5 <= paramsCount ? lua_tointeger(luaState, 5) : 100000);
 
         luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
         result["code"] = response.code;
@@ -352,10 +352,63 @@ namespace ModuleRequests::Bindings
             lua_tostring(luaState, 1),
             isDataJson ? lua_tostring(luaState, 2) : Detail::luaTableToJson(luaState, 2),
             isDataJson,
-            3 < paramsCount ? Detail::luaTableToMap(luaState, 3) : std::unordered_map<std::string, std::string>{},
-            4 < paramsCount ? lua_tostring(luaState, 4) : "",
-            5 < paramsCount ? lua_toboolean(luaState, 5) : true,
-            6 < paramsCount ? lua_tointeger(luaState, 6) : 100000);
+            3 <= paramsCount ? Detail::luaTableToMap(luaState, 3) : std::unordered_map<std::string, std::string>{},
+            4 <= paramsCount ? lua_tostring(luaState, 4) : "",
+            5 <= paramsCount ? lua_toboolean(luaState, 5) : true,
+            6 <= paramsCount ? lua_tointeger(luaState, 6) : 100000);
+
+        luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
+        result["code"] = response.code;
+        result["headers"] = luabridge::newTable(luaState);
+        for (auto header : response.headers)
+            result["headers"][header.first] = header.second;
+        result["content"] = response.content;
+
+        return result;
+    }
+
+    luabridge::LuaRef luaPut(lua_State *luaState)
+    {
+        auto paramsCount = lua_gettop(luaState);
+        if (2 > paramsCount)
+            luaL_error(luaState, "requests.put(...){...} ==> requires 2 parameters of url and data");
+        if (2 < paramsCount && LUA_TTABLE != lua_type(luaState, 3))
+            luaL_error(luaState, "requests.put(...){...} ==> the 3 parameter \"headers\" must a table");
+
+        auto isDataJson = LUA_TSTRING == lua_type(luaState, 2);
+        auto response = put(
+            lua_tostring(luaState, 1),
+            isDataJson ? lua_tostring(luaState, 2) : Detail::luaTableToJson(luaState, 2),
+            isDataJson,
+            3 <= paramsCount ? Detail::luaTableToMap(luaState, 3) : std::unordered_map<std::string, std::string>{},
+            4 <= paramsCount ? lua_tostring(luaState, 4) : "",
+            5 <= paramsCount ? lua_toboolean(luaState, 5) : true,
+            6 <= paramsCount ? lua_tointeger(luaState, 6) : 100000);
+
+        luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
+        result["code"] = response.code;
+        result["headers"] = luabridge::newTable(luaState);
+        for (auto header : response.headers)
+            result["headers"][header.first] = header.second;
+        result["content"] = response.content;
+
+        return result;
+    }
+
+    luabridge::LuaRef luaDelete(lua_State *luaState)
+    {
+        auto paramsCount = lua_gettop(luaState);
+        if (1 > paramsCount)
+            luaL_error(luaState, "requests.delete(...){...} ==> requires 1 parameter of url");
+        if (1 < paramsCount && LUA_TTABLE != lua_type(luaState, 2))
+            luaL_error(luaState, "requests.delete(...){...} ==> the 2 parameter \"headers\" must a table");
+
+        auto response = delete_(
+            lua_tostring(luaState, 1),
+            2 <= paramsCount ? Detail::luaTableToMap(luaState, 2) : std::unordered_map<std::string, std::string>{},
+            3 <= paramsCount ? lua_tostring(luaState, 3) : "",
+            4 <= paramsCount ? lua_toboolean(luaState, 4) : true,
+            5 <= paramsCount ? lua_tointeger(luaState, 5) : 100000);
 
         luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
         result["code"] = response.code;
@@ -376,10 +429,10 @@ namespace ModuleRequests::Bindings
 
         auto response = get(
             args[0].cast<std::string>(),
-            1 < args.size() ? Detail::pythonDictToMap(args[1].cast<pybind11::dict>()) : std::unordered_map<std::string, std::string>{},
-            2 < args.size() ? args[2].cast<std::string>() : "",
-            3 < args.size() ? args[3].cast<bool>() : true,
-            4 < args.size() ? args[4].cast<int>() : 100000);
+            2 <= args.size() ? Detail::pythonDictToMap(args[1].cast<pybind11::dict>()) : std::unordered_map<std::string, std::string>{},
+            3 <= args.size() ? args[2].cast<std::string>() : "",
+            4 <= args.size() ? args[3].cast<bool>() : true,
+            5 <= args.size() ? args[4].cast<int>() : 100000);
 
         pybind11::dict result;
         result["code"] = response.code;
@@ -403,10 +456,61 @@ namespace ModuleRequests::Bindings
             args[0].cast<std::string>(),
             isDataJson ? Detail::pythonDictToJson(args[1].cast<pybind11::dict>()) : PyUnicode_AsUTF8(args[1].ptr()),
             isDataJson,
-            3 < args.size() ? Detail::pythonDictToMap(args[2].cast<pybind11::dict>()) : std::unordered_map<std::string, std::string>{},
-            4 < args.size() ? args[3].cast<std::string>() : "",
-            5 < args.size() ? args[4].cast<bool>() : true,
-            6 < args.size() ? args[5].cast<int>() : 100000);
+            3 <= args.size() ? Detail::pythonDictToMap(args[2].cast<pybind11::dict>()) : std::unordered_map<std::string, std::string>{},
+            4 <= args.size() ? args[3].cast<std::string>() : "",
+            5 <= args.size() ? args[4].cast<bool>() : true,
+            6 <= args.size() ? args[5].cast<int>() : 100000);
+
+        pybind11::dict result;
+        result["code"] = response.code;
+        result["headers"] = pybind11::dict();
+        for (auto header : response.headers)
+            result["headers"][header.first.c_str()] = header.second;
+        result["content"] = response.content;
+
+        return result;
+    }
+
+    pybind11::dict pyPut(pybind11::args args)
+    {
+        if (2 > args.size())
+            throw std::runtime_error("requests.put(...){...} ==> requires 2 parameters of url and data");
+        if (2 < args.size() && !PyDict_Check(args[2].ptr()))
+            throw std::runtime_error("requests.put(...){...} ==> the 3 parameter \"headers\" must a dict");
+
+        auto isDataJson = PyDict_Check(args[1].ptr());
+        auto response = put(
+            args[0].cast<std::string>(),
+            isDataJson ? Detail::pythonDictToJson(args[1].cast<pybind11::dict>()) : PyUnicode_AsUTF8(args[1].ptr()),
+            isDataJson,
+            3 <= args.size() ? Detail::pythonDictToMap(args[2].cast<pybind11::dict>()) : std::unordered_map<std::string, std::string>{},
+            4 <= args.size() ? args[3].cast<std::string>() : "",
+            5 <= args.size() ? args[4].cast<bool>() : true,
+            6 <= args.size() ? args[5].cast<int>() : 100000);
+
+        pybind11::dict result;
+        result["code"] = response.code;
+        result["headers"] = pybind11::dict();
+        for (auto header : response.headers)
+            result["headers"][header.first.c_str()] = header.second;
+        result["content"] = response.content;
+
+        return result;
+    }
+
+    pybind11::dict pyDelete(pybind11::args args)
+    {
+        if (1 > args.size())
+            throw std::runtime_error("requests.delete(...){...} ==> requires 1 parameter of url");
+        if (1 < args.size() && !PyDict_Check(args[1].ptr()))
+            throw std::runtime_error("requests.delete(...){...} ==> the 2 parameter \"headers\" must a dict");
+
+        auto response = delete_(
+            args[0].cast<std::string>(),
+            2 <= args.size() ? Detail::pythonDictToMap(args[1].cast<pybind11::dict>()) : std::unordered_map<std::string, std::string>{},
+            3 <= args.size() ? args[2].cast<std::string>() : "",
+            4 <= args.size() ? args[3].cast<bool>() : true,
+            5 <= args.size() ? args[4].cast<int>() : 100000);
 
         pybind11::dict result;
         result["code"] = response.code;
@@ -427,10 +531,10 @@ namespace ModuleRequests::Bindings
 
         auto response = get(
             args[0].cast<std::string>(),
-            1 < args.size() ? Detail::quickjsObjectToMap(args[1]) : std::unordered_map<std::string, std::string>{},
-            2 < args.size() ? args[2].cast<std::string>() : "",
-            3 < args.size() ? args[3].cast<bool>() : true,
-            4 < args.size() ? args[4].cast<int>() : 100000);
+            2 <= args.size() ? Detail::quickjsObjectToMap(args[1]) : std::unordered_map<std::string, std::string>{},
+            3 <= args.size() ? args[2].cast<std::string>() : "",
+            4 <= args.size() ? args[3].cast<bool>() : true,
+            5 <= args.size() ? args[4].cast<int>() : 100000);
 
         auto result = quickjs::object(args);
         auto headers = quickjs::object(args);
@@ -456,10 +560,65 @@ namespace ModuleRequests::Bindings
             args[0].cast<std::string>(),
             isDataJson ? Detail::quickjsObjectToJson(args[1]) : args[1].cast<std::string>(),
             isDataJson,
-            3 < args.size() ? Detail::quickjsObjectToMap(args[2]) : std::unordered_map<std::string, std::string>{},
-            4 < args.size() ? args[3].cast<std::string>() : "",
-            5 < args.size() ? args[4].cast<bool>() : true,
-            6 < args.size() ? args[5].cast<int>() : 100000);
+            3 <= args.size() ? Detail::quickjsObjectToMap(args[2]) : std::unordered_map<std::string, std::string>{},
+            4 <= args.size() ? args[3].cast<std::string>() : "",
+            5 <= args.size() ? args[4].cast<bool>() : true,
+            6 <= args.size() ? args[5].cast<int>() : 100000);
+
+        auto result = quickjs::object(args);
+        auto headers = quickjs::object(args);
+        for (auto header : response.headers)
+            headers.setProperty(header.first.c_str(), header.second);
+
+        result.setProperty("code", response.code);
+        result.addObject("headers", headers);
+        result.setProperty("content", response.content);
+
+        return result;
+    }
+
+    JSValue jsPut(quickjs::args args)
+    {
+        if (2 > args.size())
+            return JS_ThrowSyntaxError(args, "requests.put(...){...} ==> requires 2 parameters of url and data");
+        if (2 < args.size() && !args[2].isObject())
+            return JS_ThrowSyntaxError(args, "requests.put(...){...} ==> the 3 parameter \"headers\" must an object");
+
+        auto isDataJson = args[1].isObject();
+        auto response = put(
+            args[0].cast<std::string>(),
+            isDataJson ? Detail::quickjsObjectToJson(args[1]) : args[1].cast<std::string>(),
+            isDataJson,
+            3 <= args.size() ? Detail::quickjsObjectToMap(args[2]) : std::unordered_map<std::string, std::string>{},
+            4 <= args.size() ? args[3].cast<std::string>() : "",
+            5 <= args.size() ? args[4].cast<bool>() : true,
+            6 <= args.size() ? args[5].cast<int>() : 100000);
+
+        auto result = quickjs::object(args);
+        auto headers = quickjs::object(args);
+        for (auto header : response.headers)
+            headers.setProperty(header.first.c_str(), header.second);
+
+        result.setProperty("code", response.code);
+        result.addObject("headers", headers);
+        result.setProperty("content", response.content);
+
+        return result;
+    }
+
+    JSValue jsDelete(quickjs::args args)
+    {
+        if (1 > args.size())
+            return JS_ThrowSyntaxError(args, "requests.delete(...){...} ==> requires 1 parameter of url");
+        if (1 < args.size() && !args[1].isObject())
+            return JS_ThrowSyntaxError(args, "requests.delete(...){...} ==> the 2 parameter \"headers\" must an object");
+
+        auto response = delete_(
+            args[0].cast<std::string>(),
+            2 <= args.size() ? Detail::quickjsObjectToMap(args[1]) : std::unordered_map<std::string, std::string>{},
+            3 <= args.size() ? args[2].cast<std::string>() : "",
+            4 <= args.size() ? args[3].cast<bool>() : true,
+            5 <= args.size() ? args[4].cast<int>() : 100000);
 
         auto result = quickjs::object(args);
         auto headers = quickjs::object(args);
@@ -482,6 +641,8 @@ namespace ModuleRequests
             .beginNamespace("requests")
             .addFunction("get", &Bindings::luaGet)
             .addFunction("post", &Bindings::luaPost)
+            .addFunction("put", &Bindings::luaPut)
+            .addFunction("delete", &Bindings::luaDelete)
             .endNamespace();
     }
 
@@ -492,6 +653,8 @@ namespace ModuleRequests
         auto requestModule = module.def_submodule("requests");
         requestModule.def("get", &Bindings::pyGet);
         requestModule.def("post", &Bindings::pyPost);
+        requestModule.def("put", &Bindings::pyPut);
+        requestModule.def("delete", &Bindings::pyDelete);
     }
 
     void bind(JSContext *context)
@@ -500,6 +663,8 @@ namespace ModuleRequests
 
         requestModule.addFunction<Bindings::jsGet>("get");
         requestModule.addFunction<Bindings::jsPost>("post");
+        requestModule.addFunction<Bindings::jsPut>("put");
+        requestModule.addFunction<Bindings::jsDelete>("delete");
 
         quickjs::object::getGlobal(context).addObject("requests", requestModule);
     }
@@ -508,6 +673,7 @@ namespace ModuleRequests
     {
         CURL *curl = curl_easy_init();
 
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
         auto result = Detail::request(curl, url, "", false, headers, proxy, redirect, timeout);
 
         curl_easy_cleanup(curl);
@@ -519,7 +685,32 @@ namespace ModuleRequests
     {
         CURL *curl = curl_easy_init();
 
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
         auto result = Detail::request(curl, url, data, isJson, headers, proxy, redirect, timeout);
+
+        curl_easy_cleanup(curl);
+
+        return result;
+    }
+
+    Detail::RequestResult put(const std::string &url, const std::string &data, bool isJson, const Detail::headers_t &headers, const std::string &proxy, bool redirect, size_t timeout)
+    {
+        CURL *curl = curl_easy_init();
+
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        auto result = Detail::request(curl, url, data, isJson, headers, proxy, redirect, timeout);
+
+        curl_easy_cleanup(curl);
+
+        return result;
+    }
+
+    Detail::RequestResult delete_(const std::string &url, const Detail::headers_t &headers, const std::string &proxy, bool redirect, size_t timeout)
+    {
+        CURL *curl = curl_easy_init();
+
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+        auto result = Detail::request(curl, url, "", false, headers, proxy, redirect, timeout);
 
         curl_easy_cleanup(curl);
 
