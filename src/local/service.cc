@@ -48,6 +48,7 @@ namespace Service::Detail
         ModuleJson::bind(luaState);
         ModuleRequests::bind(luaState);
         ModuleTools::bind(luaState, &runInfo);
+        ModuleSystem::bind(luaState);
 
         // notify runnerId
         runnerId->set_value(reinterpret_cast<uint64_t>(luaState));
@@ -158,9 +159,9 @@ namespace Service::Detail
             runInfo.status = TaskRunStatus::finished;
 
             if (result)
-                ModuleTools::Logger::succeed({"lua execute success"}, &runInfo);
+                ModuleTools::Logger::succeed({"python execute success"}, &runInfo);
             else
-                ModuleTools::Logger::failed({"lua execute failed"}, &runInfo);
+                ModuleTools::Logger::failed({"python execute failed"}, &runInfo);
 
             Py_Finalize();
             taskRunInfo.erase(reinterpret_cast<uint64_t>(mainModule));
@@ -171,6 +172,7 @@ namespace Service::Detail
         ModuleJson::bind(mainModule);
         ModuleRequests::bind(mainModule);
         ModuleTools::bind(mainModule, &runInfo);
+        ModuleSystem::bind(mainModule);
 
         // notify runnerId
         runnerId->set_value(reinterpret_cast<uint64_t>(mainModule));
@@ -248,9 +250,9 @@ namespace Service::Detail
             runInfo.status = TaskRunStatus::finished;
 
             if (result)
-                ModuleTools::Logger::succeed({"lua execute success"}, &runInfo);
+                ModuleTools::Logger::succeed({"javascript execute success"}, &runInfo);
             else
-                ModuleTools::Logger::failed({"lua execute failed"}, &runInfo);
+                ModuleTools::Logger::failed({"javascript execute failed"}, &runInfo);
 
             JS_FreeContext(context);
             JS_FreeRuntime(runtime);
@@ -262,6 +264,7 @@ namespace Service::Detail
         ModuleJson::bind(context);
         ModuleRequests::bind(context);
         ModuleTools::bind(context, &runInfo);
+        ModuleSystem::bind(context);
 
         // notify runnerId
         runnerId->set_value(reinterpret_cast<uint64_t>(context));
@@ -279,9 +282,10 @@ namespace Service::Detail
 
         runInfo.status = TaskRunStatus::running;
         auto methods = stringSplitAscii(callMethods, ",");
+        auto globalThis = quickjs::object::getGlobal(context);
         for (size_t i = 0; i < methods.size() + 1; i++)
         {
-            auto targetFunction = JS_GetPropertyStr(context, loadResult, 0 == i ? "setTaskPassport" : methods[i - 1].c_str());
+            auto targetFunction = JS_GetPropertyStr(context, globalThis, 0 == i ? "setTaskPassport" : methods[i - 1].c_str());
             if (!JS_IsFunction(context, targetFunction))
             {
                 ModuleTools::Logger::failed(
@@ -299,10 +303,11 @@ namespace Service::Detail
             if (0 == i)
             {
                 auto args = JS_NewString(context, passport.c_str());
-                callResult = JS_Call(context, targetFunction, loadResult, 1, &args);
+                callResult = JS_Call(context, targetFunction, globalThis, 1, &args);
             }
             else
-                callResult = JS_Call(context, targetFunction, loadResult, 0, nullptr);
+                callResult = JS_Call(context, targetFunction, globalThis, 0, nullptr);
+            JS_FreeValue(context, targetFunction);
 
             // check call result
             if (JS_IsException(callResult))
@@ -330,6 +335,9 @@ namespace Service::Detail
                 result = JS_ToBool(context, callResult);
             }
         }
+
+        // execute remaining jobs
+        js_std_loop(context);
 
         return true;
     }

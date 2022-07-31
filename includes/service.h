@@ -11,6 +11,7 @@
 #include "ModuleJson.h"
 #include "ModuleRequests.h"
 #include "ModuleTools.h"
+#include "ModuleSystem.h"
 #include "NetworkService.h"
 
 #include <yasio/yasio/obstream.hpp>
@@ -19,6 +20,7 @@
 #include <Python.h>
 #include <pybind11/include/pybind11/pybind11.h>
 #include <quickjs-cmake/quickjs/quickjs.h>
+#include <quickjs-cmake/quickjs/quickjs-libc.h>
 
 #include <string>
 #include <string_view>
