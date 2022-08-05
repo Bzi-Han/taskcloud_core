@@ -138,5 +138,7 @@ int main(int argc, char **args)
         passport,
         calls);
 
+    getchar();
+
     return 0;
 }

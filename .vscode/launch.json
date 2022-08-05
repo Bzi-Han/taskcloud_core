@@ -8,8 +8,12 @@
             "name": "(Windows) Launch",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/core.exe",
-            "args": [],
+            "program": "${workspaceFolder}/build/Debug/local.exe",
+            "args": [
+                "-l",
+                "js",
+                "${workspaceFolder}/build/Debug/test.js"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
