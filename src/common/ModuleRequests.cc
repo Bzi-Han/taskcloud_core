@@ -96,7 +96,10 @@ namespace ModuleRequests::Detail
         curl_easy_setopt(curl, CURLOPT_HEADERDATA, &result.headers);
 
         // perform request
-        curl_easy_perform(curl);
+        auto status = curl_easy_perform(curl);
+        result.success = CURLE_OK != status;
+        if (result.success)
+            result.errorMessage = curl_easy_strerror(status);
 
         // get response code
         curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &result.code);
@@ -330,6 +333,8 @@ namespace ModuleRequests::Bindings
             5 <= paramsCount ? lua_tointeger(luaState, 5) : 100000);
 
         luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = luabridge::newTable(luaState);
         for (auto header : response.headers)
@@ -347,10 +352,10 @@ namespace ModuleRequests::Bindings
         if (2 < paramsCount && LUA_TTABLE != lua_type(luaState, 3))
             luaL_error(luaState, "requests.post(...){...} ==> the 3 parameter \"headers\" must a table");
 
-        auto isDataJson = LUA_TSTRING == lua_type(luaState, 2);
+        auto isDataJson = LUA_TTABLE == lua_type(luaState, 2);
         auto response = post(
             lua_tostring(luaState, 1),
-            isDataJson ? lua_tostring(luaState, 2) : Detail::luaTableToJson(luaState, 2),
+            isDataJson ? Detail::luaTableToJson(luaState, 2) : lua_tostring(luaState, 2),
             isDataJson,
             3 <= paramsCount ? Detail::luaTableToMap(luaState, 3) : std::unordered_map<std::string, std::string>{},
             4 <= paramsCount ? lua_tostring(luaState, 4) : "",
@@ -358,6 +363,8 @@ namespace ModuleRequests::Bindings
             6 <= paramsCount ? lua_tointeger(luaState, 6) : 100000);
 
         luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = luabridge::newTable(luaState);
         for (auto header : response.headers)
@@ -375,10 +382,10 @@ namespace ModuleRequests::Bindings
         if (2 < paramsCount && LUA_TTABLE != lua_type(luaState, 3))
             luaL_error(luaState, "requests.put(...){...} ==> the 3 parameter \"headers\" must a table");
 
-        auto isDataJson = LUA_TSTRING == lua_type(luaState, 2);
+        auto isDataJson = LUA_TTABLE == lua_type(luaState, 2);
         auto response = put(
             lua_tostring(luaState, 1),
-            isDataJson ? lua_tostring(luaState, 2) : Detail::luaTableToJson(luaState, 2),
+            isDataJson ? Detail::luaTableToJson(luaState, 2) : lua_tostring(luaState, 2),
             isDataJson,
             3 <= paramsCount ? Detail::luaTableToMap(luaState, 3) : std::unordered_map<std::string, std::string>{},
             4 <= paramsCount ? lua_tostring(luaState, 4) : "",
@@ -386,6 +393,8 @@ namespace ModuleRequests::Bindings
             6 <= paramsCount ? lua_tointeger(luaState, 6) : 100000);
 
         luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = luabridge::newTable(luaState);
         for (auto header : response.headers)
@@ -411,6 +420,8 @@ namespace ModuleRequests::Bindings
             5 <= paramsCount ? lua_tointeger(luaState, 5) : 100000);
 
         luabridge::LuaRef result(luaState, luabridge::newTable(luaState));
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = luabridge::newTable(luaState);
         for (auto header : response.headers)
@@ -435,6 +446,8 @@ namespace ModuleRequests::Bindings
             5 <= args.size() ? args[4].cast<int>() : 100000);
 
         pybind11::dict result;
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = pybind11::dict();
         for (auto header : response.headers)
@@ -462,6 +475,8 @@ namespace ModuleRequests::Bindings
             6 <= args.size() ? args[5].cast<int>() : 100000);
 
         pybind11::dict result;
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = pybind11::dict();
         for (auto header : response.headers)
@@ -489,6 +504,8 @@ namespace ModuleRequests::Bindings
             6 <= args.size() ? args[5].cast<int>() : 100000);
 
         pybind11::dict result;
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = pybind11::dict();
         for (auto header : response.headers)
@@ -513,6 +530,8 @@ namespace ModuleRequests::Bindings
             5 <= args.size() ? args[4].cast<int>() : 100000);
 
         pybind11::dict result;
+        result["success"] = response.success;
+        result["errorMessage"] = response.errorMessage;
         result["code"] = response.code;
         result["headers"] = pybind11::dict();
         for (auto header : response.headers)
@@ -541,6 +560,8 @@ namespace ModuleRequests::Bindings
         for (auto header : response.headers)
             headers.setProperty(header.first.c_str(), header.second);
 
+        result.setProperty("success", response.success);
+        result.setProperty("errorMessage", response.errorMessage);
         result.setProperty("code", response.code);
         result.addObject("headers", headers);
         result.setProperty("content", response.content);
@@ -570,6 +591,8 @@ namespace ModuleRequests::Bindings
         for (auto header : response.headers)
             headers.setProperty(header.first.c_str(), header.second);
 
+        result.setProperty("success", response.success);
+        result.setProperty("errorMessage", response.errorMessage);
         result.setProperty("code", response.code);
         result.addObject("headers", headers);
         result.setProperty("content", response.content);
@@ -599,6 +622,8 @@ namespace ModuleRequests::Bindings
         for (auto header : response.headers)
             headers.setProperty(header.first.c_str(), header.second);
 
+        result.setProperty("success", response.success);
+        result.setProperty("errorMessage", response.errorMessage);
         result.setProperty("code", response.code);
         result.addObject("headers", headers);
         result.setProperty("content", response.content);
@@ -625,6 +650,8 @@ namespace ModuleRequests::Bindings
         for (auto header : response.headers)
             headers.setProperty(header.first.c_str(), header.second);
 
+        result.setProperty("success", response.success);
+        result.setProperty("errorMessage", response.errorMessage);
         result.setProperty("code", response.code);
         result.addObject("headers", headers);
         result.setProperty("content", response.content);

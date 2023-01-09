@@ -22,6 +22,8 @@ namespace ModuleRequests
 
         struct RequestResult
         {
+            bool success;
+            std::string errorMessage;
             uint32_t code;
             headers_t headers;
             std::string content;
