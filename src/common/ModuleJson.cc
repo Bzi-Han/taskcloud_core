@@ -194,7 +194,12 @@ namespace ModuleJson::Detail
             if (m_readerInfoStack.top().isArray)
                 m_luaReaderStack.top()[++m_readerInfoStack.top().arraySize] = value;
             else
-                m_luaReaderStack.top()[m_readerInfoStack.top().objectKey] = value;
+            {
+                if constexpr (std::is_same_v<any_t, std::nullptr_t>)
+                    m_luaReaderStack.top()[m_readerInfoStack.top().objectKey] = luabridge::Nil();
+                else
+                    m_luaReaderStack.top()[m_readerInfoStack.top().objectKey] = value;
+            }
             break;
         case ReaderType::python:
             if (m_readerInfoStack.top().isArray)
