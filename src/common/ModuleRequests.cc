@@ -43,6 +43,10 @@ namespace ModuleRequests::Detail
         // set timeout
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
 
+        // do not verify the peer
+        if (std::string::npos != url.find("https"))
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
+
         // set response body callback
         curl_easy_setopt(
             curl,
@@ -97,7 +101,7 @@ namespace ModuleRequests::Detail
 
         // perform request
         auto status = curl_easy_perform(curl);
-        result.success = CURLE_OK != status;
+        result.success = CURLE_OK == status;
         if (result.success)
             result.errorMessage = curl_easy_strerror(status);
 

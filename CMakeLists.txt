@@ -37,8 +37,10 @@ add_subdirectory(third_party/cryptopp-cmake)
 set(CMAKE_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION_BACK})
 
 # build curl static library
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 set(BUILD_SHARED_LIBS OFF)
 set(BUILD_CURL_EXE OFF)
+set(CURL_USE_OPENSSL ON)
 add_subdirectory(third_party/curl)
 
 # scan common source files
