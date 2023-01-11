@@ -1,6 +1,8 @@
 #ifndef MODULE_REQUESTS_H // !MODULE_REQUESTS_H
 #define MODULE_REQUESTS_H
 
+#include "common.h"
+
 #include <luajit/src/lua.hpp>
 #include <luabridge/Source/LuaBridge/LuaBridge.h>
 #include <Python.h>
@@ -30,16 +32,6 @@ namespace ModuleRequests
         };
 
         RequestResult request(CURL *curl, const std::string &url, const std::string &data, bool isJson, const headers_t &headers, const std::string &proxy, bool redirect, size_t timeout);
-
-        std::unordered_map<std::string, std::string> luaTableToMap(lua_State *luaState, int index);
-        std::string luaTableToJson(lua_State *luaState, int index);
-
-        std::unordered_map<std::string, std::string> pythonDictToMap(const pybind11::dict &dict);
-        std::string pythonDictToJson(const pybind11::dict &dict);
-        std::string pythonListToJson(const pybind11::list &list);
-
-        std::unordered_map<std::string, std::string> quickjsObjectToMap(const quickjs::value<JSValue> &object);
-        std::string quickjsObjectToJson(const quickjs::value<JSValue> &object);
     }
 
     namespace Bindings

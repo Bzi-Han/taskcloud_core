@@ -233,6 +233,13 @@ namespace ModuleJson::Bindings
 
         return reader;
     }
+    std::string lua_dumps(const luabridge::LuaRef &data)
+    {
+        if (!data.isTable())
+            luaL_error(data.state(), "json.dumps: expected table");
+
+        return common::luaTableToJson(data.state(), 1);
+    }
 
     pybind11::object python_loads(const std::string &data)
     {
@@ -242,6 +249,13 @@ namespace ModuleJson::Bindings
         rapidjson::Reader{}.Parse(dataStream, reader);
 
         return reader;
+    }
+    std::string python_dumps(const pybind11::object &data)
+    {
+        if (PyDict_Check(data.ptr()))
+            return common::pythonDictToJson(data);
+        else
+            return common::pythonListToJson(data);
     }
 
     JSValue javascript_loads(const quickjs::value<std::string> &data)
@@ -253,6 +267,10 @@ namespace ModuleJson::Bindings
 
         return reader;
     }
+    std::string javascript_dumps(const quickjs::value<JSValue> &data)
+    {
+        return common::quickjsObjectToJson(data);
+    }
 }
 
 namespace ModuleJson
@@ -262,6 +280,7 @@ namespace ModuleJson
         luabridge::getGlobalNamespace(luaState)
             .beginNamespace("json")
             .addFunction("loads", &Bindings::lua_loads)
+            .addFunction("dumps", &Bindings::lua_dumps)
             .endNamespace();
     }
 
@@ -271,6 +290,7 @@ namespace ModuleJson
 
         auto jsonModule = module.def_submodule("json");
         jsonModule.def("loads", &Bindings::python_loads);
+        jsonModule.def("dumps", &Bindings::python_dumps);
     }
 
     void bind(JSContext *context)
@@ -278,6 +298,7 @@ namespace ModuleJson
         auto jsonModule = quickjs::object(context);
 
         jsonModule.addFunction<Bindings::javascript_loads>("loads");
+        jsonModule.addFunction<Bindings::javascript_dumps>("dumps");
 
         quickjs::object::getGlobal(context).addObject("json", jsonModule);
     }
@@ -285,5 +306,15 @@ namespace ModuleJson
     rapidjson::Document loads(const std::string &data)
     {
         return std::move(rapidjson::Document{}.Parse(data.c_str()));
+    }
+
+    std::string dumps(const rapidjson::Document &data)
+    {
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+
+        data.Accept(writer);
+
+        return buffer.GetString();
     }
 }

@@ -1,6 +1,8 @@
 #ifndef MODULE_JSON_H // !MODULE_JSON_H
 #define MODULE_JSON_H
 
+#include "common.h"
+
 #include <luajit/src/lua.hpp>
 #include <luabridge/Source/LuaBridge/LuaBridge.h>
 #include <Python.h>
@@ -10,6 +12,8 @@
 #include <rapidjson/include/rapidjson/reader.h>
 #include <rapidjson/include/rapidjson/document.h>
 #include <rapidjson/include/rapidjson/error/en.h>
+#include <rapidjson/include/rapidjson/stringbuffer.h>
+#include <rapidjson/include/rapidjson/writer.h>
 
 #include <stack>
 
@@ -95,10 +99,13 @@ namespace ModuleJson
     namespace Bindings
     {
         luabridge::LuaRef lua_loads(const luabridge::LuaRef &data);
+        std::string lua_dumps(const luabridge::LuaRef &data);
 
         pybind11::object python_loads(const std::string &data);
+        std::string python_dumps(const pybind11::object &data);
 
         JSValue javascript_loads(const quickjs::value<std::string> &data);
+        std::string javascript_dumps(const quickjs::value<JSValue> &data);
     }
 
     void bind(lua_State *luaState);
@@ -108,6 +115,7 @@ namespace ModuleJson
     void bind(JSContext *context);
 
     rapidjson::Document loads(const std::string &data);
+    std::string dumps(const rapidjson::Document &data);
 }
 
 #endif // !MODULE_JSON_H
