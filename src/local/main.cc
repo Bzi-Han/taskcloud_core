@@ -103,17 +103,26 @@ int main(int argc, char **args)
     if ('-' == args[1][0])
         parseArguments(argc, args, language, passport, calls);
 
+    // check script path
+    std::filesystem::path scriptPath = std::filesystem::absolute(args[argc - 1]);
+    if (!std::filesystem::exists(scriptPath))
+    {
+        std::cout << "Error: script " << scriptPath.string() << " does not exist" << std::endl;
+        exit(1);
+    }
+
     // check language
     Service::language_t languageType = Service::language_t::lua;
     if (!language.empty())
         languageType = checkLanguageType(language);
-
-    // check script path
-    std::filesystem::path scriptPath(args[argc - 1]);
-    if (!std::filesystem::exists(scriptPath))
+    else
     {
-        std::cout << "Error: script " << scriptPath << " does not exist" << std::endl;
-        exit(1);
+        auto fileExtension = scriptPath.extension().string();
+
+        if (".js" == fileExtension)
+            languageType = Service::language_t::javascript;
+        else if (".py" == fileExtension)
+            languageType = Service::language_t::python;
     }
 
     // read script
@@ -138,7 +147,7 @@ int main(int argc, char **args)
         passport,
         calls);
 
-    getchar();
+    Service::join();
 
     return 0;
 }

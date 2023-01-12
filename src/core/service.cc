@@ -446,4 +446,10 @@ namespace Service
         return taskRunInfo[runnerId]->status;
     }
 
+    void join()
+    {
+        while (!taskRunInfo.empty())
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+
 }

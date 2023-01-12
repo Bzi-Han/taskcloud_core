@@ -112,6 +112,8 @@ namespace Service
     bool stop(uint64_t runnerId);
 
     task_run_status_t status(uint64_t runnerId);
+
+    void join();
 }
 
 #endif // !SERVICE_H

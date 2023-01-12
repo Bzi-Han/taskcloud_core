@@ -139,22 +139,25 @@ namespace ModuleTools::Bindings
                 luaL_error(luaState, "unknown logger type");
         }
 
-        void pythonLogger(pybind11::args args)
+        void pythonLogger(Detail::LogType logType, const pybind11::args &args)
         {
-            auto currentFrame = PyEval_GetFrame();
-            std::string name = PyUnicode_AsUTF8(PyTuple_GetItem(currentFrame->f_code->co_names, 1));
-            auto userData = reinterpret_cast<void *>(pybind11::cast<pybind11::dict>(PyEval_GetLocals())["logger"].attr("__logger_options").cast<size_t>());
+            auto userData = reinterpret_cast<void *>(pybind11::cast<pybind11::dict>(PyEval_GetGlobals())["logger"].attr("__logger_options").cast<size_t>());
 
-            if ("operation" == name)
+            switch (logType)
+            {
+            case Detail::LogType::operation:
                 ModuleTools::Logger::operation(Detail::pythonArguments(args), userData);
-            else if ("info" == name)
+                break;
+            case Detail::LogType::info:
                 ModuleTools::Logger::info(Detail::pythonArguments(args), userData);
-            else if ("failed" == name)
+                break;
+            case Detail::LogType::failed:
                 ModuleTools::Logger::failed(Detail::pythonArguments(args), userData);
-            else if ("succeed" == name)
+                break;
+            case Detail::LogType::succeed:
                 ModuleTools::Logger::succeed(Detail::pythonArguments(args), userData);
-            else
-                throw std::runtime_error("unknown logger type");
+                break;
+            }
         }
 
         JSValue javascriptLogger(Detail::LogType logType, JSContext *context, JSValueConst this_val, int argc, JSValueConst *argv)
@@ -207,10 +210,18 @@ namespace ModuleTools
 
         auto loggerModule = module.def_submodule("logger");
         loggerModule.add_object("__logger_options", pybind11::int_(reinterpret_cast<size_t>(loggerOptions)));
-        loggerModule.def("operation", &Bindings::Logger::pythonLogger);
-        loggerModule.def("info", &Bindings::Logger::pythonLogger);
-        loggerModule.def("failed", &Bindings::Logger::pythonLogger);
-        loggerModule.def("succeed", &Bindings::Logger::pythonLogger);
+        loggerModule.def(
+            "operation", +[](pybind11::args args)
+                         { Bindings::Logger::pythonLogger(Detail::LogType::operation, args); });
+        loggerModule.def(
+            "info", +[](pybind11::args args)
+                    { Bindings::Logger::pythonLogger(Detail::LogType::info, args); });
+        loggerModule.def(
+            "failed", +[](pybind11::args args)
+                      { Bindings::Logger::pythonLogger(Detail::LogType::failed, args); });
+        loggerModule.def(
+            "succeed", +[](pybind11::args args)
+                       { Bindings::Logger::pythonLogger(Detail::LogType::succeed, args); });
     }
 
     void bind(JSContext *context, void *loggerOptions)

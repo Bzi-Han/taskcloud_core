@@ -475,7 +475,7 @@ namespace ModuleCrypto
             new CryptoPP::Base64Encoder(
                 new CryptoPP::StringSink(result)));
 
-        return result;
+        return '\n' == result[result.length() - 1] ? result.substr(0, result.length() - 1) : result;
     }
 
     std::string base64Decode(const std::string &data)

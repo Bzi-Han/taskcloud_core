@@ -5,17 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(Windows) Launch",
+            "name": "tests",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/core.exe",
+            "program": "${workspaceFolder}/build/Debug/local.exe",
             "args": [
-                "-l",
-                "js",
-                "${workspaceFolder}/build/Debug/test.js"
+                "${workspaceFolder}/tests/start.lua"
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/Debug",
             "environment": [],
             "console": "externalTerminal"
         }
