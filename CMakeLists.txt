@@ -28,6 +28,8 @@ add_subdirectory(third_party/luajit-cmake)
 add_subdirectory(third_party/quickjs-cmake)
 
 # build cryptopp static library
+set(BUILD_TESTING OFF)
+set(BUILD_SHARED OFF)
 set(CRYPTOPP_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cryptopp)
 set(CRYPTOPP_DATA_DIR "")
 set(CMAKE_SYSTEM_VERSION_BACK ${CMAKE_SYSTEM_VERSION})
