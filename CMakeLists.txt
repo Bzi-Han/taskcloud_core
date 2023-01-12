@@ -31,7 +31,7 @@ add_subdirectory(third_party/quickjs-cmake)
 set(BUILD_TESTING OFF)
 set(BUILD_SHARED OFF)
 set(CRYPTOPP_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cryptopp)
-set(CRYPTOPP_DATA_DIR "")
+set(CRYPTOPP_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cryptopp CACHE PATH "Crypto++ project directory")
 set(CMAKE_SYSTEM_VERSION_BACK ${CMAKE_SYSTEM_VERSION})
 set(CMAKE_SYSTEM_VERSION "1145141919810") # To make sure the CMake subdirectory does not add compile definition "_WIN32_WINNT=0x0A00"
 include_directories(build/third_party/cryptopp-cmake)
