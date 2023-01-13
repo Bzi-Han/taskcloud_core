@@ -90,7 +90,13 @@ int main()
             g_service.backward(clientId, std::move(obs.buffer()));
         });
 
-    getchar();
+    std::string command;
+    for (;;)
+    {
+        std::cin >> command;
+        if ("exit" == command)
+            break;
+    }
 
     return 0;
 }
