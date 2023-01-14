@@ -2,7 +2,7 @@
 
 ThreadPool g_threadPool;
 
-const char *g_serviceAddress = "127.0.0.1";
+const char *g_serviceAddress = "0.0.0.0";
 
 uint16_t g_servicePort = 16888;
 
