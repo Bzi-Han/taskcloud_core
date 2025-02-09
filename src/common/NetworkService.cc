@@ -6,8 +6,8 @@ self::NetworkService(const char *host, uint16_t port)
     : m_service({host, port}),
       m_eventHandlers()
 {
-    m_service.set_option(yasio::YOPT_C_UNPACK_PARAMS, 10 * 1024 * 1024, -1, 4, 0);
-    m_service.set_option(yasio::YOPT_S_DEFERRED_EVENT, 0);
+    m_service.set_option(yasio::inet::YOPT_C_UNPACK_PARAMS, 10 * 1024 * 1024, -1, 4, 0);
+    m_service.set_option(yasio::inet::YOPT_S_NO_DISPATCH, 0);
     m_service.open(0, yasio::YCK_TCP_SERVER);
 
     m_service.start(
